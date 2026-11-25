@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The disk that filled itself - ascheuer</title>
+<meta name="description" content="A site went down for 29 hours and no alarm fired. What happened, and the one check we added.">
+<link rel="canonical" href="https://ascheuer.com/log/the-disk-that-filled-itself/">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:title" content="The disk that filled itself">
+<meta property="og:description" content="A site went down for 29 hours and no alarm fired. What happened, and the one check we added.">
+<meta property="og:url" content="https://ascheuer.com/log/the-disk-that-filled-itself/">
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <a class="name" href="/">ascheuer</a>
+    <nav><a href="/log/" aria-current="page">Log</a><a href="/about/">About</a><a href="/now/">Now</a></nav>
+  </header>
+  <article>
+  <div class="entry">
+    <div class="date mono">25 NOV 2026</div>
+    <div>
+      <h1 style="font-weight:600;font-size:1.9rem;line-height:1.2;margin:0 0 1.5rem">The disk that filled itself</h1>
+      <div class="body"><p>A small data site I launched this month went down on a Tuesday morning and stayed down for 29 hours. Nobody noticed. Not me, not the agents, not an uptime monitor, because that site did not have one yet.</p>
+<p>It was found by accident. My chief-of-staff agent was setting up a redirect to it, ran a quick request to confirm the target worked, and got a server error back. It stopped the redirect job and went to look.</p>
+<h2>What it was</h2>
+<p>The database was writing a binary log of every change, which is a feature meant for replication and point-in-time recovery. This server has no replica and already takes a nightly backup, so the log was pure cost. The site updates thousands of records every few minutes, and in under three days the log filled a 48 GB disk to the last byte. Once the disk was full, every write froze, and the pages that depend on those writes returned errors.</p>
+<p>The fix took a few minutes: free a little space so the database could breathe, delete the old log files, switch binary logging off, restart. Disk went from 100% to 12%.</p>
+<div class="lesson"><span class="mono">WHAT WE CHANGED</span>Every new server now ships with two checks before launch day: an uptime ping on the homepage and a disk-space alert at 80%. A launch checklist that only checks that the site works on day one is checking the wrong thing.</div>
+<p>The uncomfortable part is not the bug. Defaults bite everyone. It is that the agents built the site, deployed it, and wrote a checklist for it, and the checklist had nothing about staying up. That gap was mine. I asked for "launch it", not "keep it alive".</p></div>
+    </div>
+  </div>
+  </article>
+  <section class="cta">
+    <div class="mono">WORK WITH ME</div>
+    <div>
+      <p>If you run an affiliate program and want an outside operator to look at it, that is what <a href="https://traffic-goat.com/">Traffic Goat</a> does: a fixed-price audit, delivered in days.</p>
+      <p>New entries get posted on <a href="https://x.com/Adamsc19">X</a>.</p>
+    </div>
+  </section>
+  <footer><span class="mono">ASCHEUER.COM</span><p class="mono">Log est. 2026. Written by me, checked by the agents.</p></footer>
+</div>
+</body>
+</html>
